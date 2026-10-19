@@ -24,25 +24,27 @@ Authorized research seeds → budgeted chain readers → SQLite cache/checkpoint
 
 | Location | Review focus |
 | --- | --- |
-| [`pipeline.py`](pipeline.py) | Source/configuration inspected for scope and structure |
-| [`evm.py`](evm.py) | Source/configuration inspected for scope and structure |
-| [`solana.py`](solana.py) | Source/configuration inspected for scope and structure |
-| [`storage.py`](storage.py) | Source/configuration inspected for scope and structure |
-| [`ranking.py`](ranking.py) | Source/configuration inspected for scope and structure |
+| [`wallet_forensics/pipeline.py`](wallet_forensics/pipeline.py) | Source/configuration inspected for scope and structure |
+| [`wallet_forensics/evm.py`](wallet_forensics/evm.py) | Source/configuration inspected for scope and structure |
+| [`wallet_forensics/solana.py`](wallet_forensics/solana.py) | Source/configuration inspected for scope and structure |
+| [`wallet_forensics/storage.py`](wallet_forensics/storage.py) | Source/configuration inspected for scope and structure |
+| [`wallet_forensics/ranking.py`](wallet_forensics/ranking.py) | Source/configuration inspected for scope and structure |
 
 Internal package and module names are retained where changing them would affect imports or compatibility. This descriptive repository name does not imply a completed package/API migration.
 
 ## Setup
 
-Use requirements.txt and keep the package layout shown by __main__.py. Begin with fixture tests; live collection requires an explicit local provider and budget.
+Python >=3.11. The preparation copy restores a normal wallet_forensics package layout and adds pyproject.toml. Install with python -m pip install -e . and run python -m unittest discover -s tests -p test_forensics.py -v. Live collection requires an explicit local provider and budget.
 
 Start from an isolated environment. Use `.env.example` when present and inspect the configuration loader: an example file is not necessarily loaded automatically. Runtime databases, real account sessions and private credentials are not bundled. Live integration prerequisites are separate from local tests.
 
 ## Validation
 
-Static parsing checked 16 Python files and 0 strict JSON files. Python syntax errors: 0; JSON errors: 0. No functional test/build result is claimed for this preparation.
+Static parsing checked 16 Python files and 0 strict JSON files. Python syntax errors: 0; JSON errors: 0. The selected offline suite passed.
 
-Available test scripts are inventoried in [the review notes](docs/REVIEW.md). Choose offline checks before operating any integration.
+```console
+python -m unittest discover -s tests -p test_forensics.py -v
+```
 
 These results apply to the selected checks on the preparation copy. They do not establish deployment readiness, full coverage, live provider availability or measured performance. CI definitions, when present under `docs/ci-templates/`, are inactive review templates; no remote CI badge is claimed.
 

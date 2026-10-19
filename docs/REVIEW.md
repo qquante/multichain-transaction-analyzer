@@ -5,8 +5,8 @@
 This review combines file inspection, manifest/README analysis, static parsing and selected offline tests. It is not a complete manual line-by-line audit of every source file, penetration test or production certification.
 
 - Source files by language: {"Python": 16}.
-- Dependency/entrypoint manifests: `requirements.txt`
-- Main inspection locations: `pipeline.py`, `evm.py`, `solana.py`, `storage.py`, `ranking.py`.
+- Dependency/entrypoint manifests: `pyproject.toml`, `requirements.txt`
+- Main inspection locations: `wallet_forensics/pipeline.py`, `wallet_forensics/evm.py`, `wallet_forensics/solana.py`, `wallet_forensics/storage.py`, `wallet_forensics/ranking.py`.
 - Original source folders remain unchanged; this is an isolated preparation copy.
 - Descriptive repository name and relevant GitHub topics were selected from implementation evidence.
 
@@ -24,7 +24,7 @@ Unused-code removal requires reference/call analysis plus relevant tests; it is 
 
 ## Validation result
 
-Static parsing checked 16 Python files and 0 strict JSON files. Python syntax errors: 0; JSON errors: 0. No functional test/build result is claimed for this preparation.
+Static parsing checked 16 Python files and 0 strict JSON files. Python syntax errors: 0; JSON errors: 0. The selected offline suite passed.
 
 No live transaction, order, mining/cloud deployment, Telegram send or model inference is part of the validation reported here. Package installation where required used disabled lifecycle scripts. Full runtime/build validation is pending unless explicitly recorded above.
 
