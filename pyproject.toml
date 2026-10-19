@@ -1,0 +1,14 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "multichain-transaction-analyzer"
+version = "0.1.0"
+description = "Read-only multichain transaction research with budgeted collection and evidence-qualified reports"
+requires-python = ">=3.11"
+dependencies = ["pycryptodome>=3.23,<4"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["wallet_forensics*"]
