@@ -1,78 +1,49 @@
 # Multichain Transaction Analyzer
 
-**Budgeted EVM/Solana research with checkpoints and evidence-qualified reports.**
-
 ![Language: Python](https://img.shields.io/badge/Language-Python-3776AB?style=flat-square&logo=python) ![Chains: EVM and Solana](https://img.shields.io/badge/Chains-EVM%20and%20Solana-555555?style=flat-square) [![License: MIT](https://img.shields.io/badge/License-MIT-555555?style=flat-square)](LICENSE)
 
-[Overview](#overview) · [Quickstart](#quickstart) · [Example](#example) · [Validation](#validation) · [Documentation](#documentation)
+Investigate EVM and Solana transaction observations with bounded requests, persistent checkpoints and evidence-qualified reports.
 
-## Overview
+The collector is designed to stop and resume. It keeps source audit state, processed transactions and coverage in SQLite, rather than assuming that an interrupted network run is a complete research result.
 
-A resumable EVM/Solana transaction research pipeline with request budgets, cached evidence and ranked output.
+## The command model
 
-**Stack:** Python · SQLite · HTTP/RPC readers · JSON/CSV · pycryptodome
+[wallet_forensics/__main__.py](wallet_forensics/__main__.py) exposes distinct stages:
 
-## Research that can resume
-
-| Component | Behavior |
+| Stage | Commands |
 | --- | --- |
-| Readers | EVM and Solana adapters normalize public transaction observations. |
-| Budgets | Request limits and checkpoints bound collection work. |
-| Reports | Cached evidence supports verification and ranked JSON/CSV output. |
+| Source/local state | `audit`, `status`, `verify` |
+| Network collection | `probe`, `discover`, `collect`, `run`, `seed-check` |
+| Derived outputs | `rank`, `report` |
+| Cooperative stop | `stop` |
 
-## Processing path
+Collection accepts chain selection, transaction/page limits and a hard request budget (`--budget`, default 3000). A directory lock prevents two collectors from writing the same output concurrently. Budget exhaustion records a checkpointed stop instead of reporting success for missing coverage.
 
-```mermaid
-flowchart LR
-  N0["Authorized research seeds"]
-  N1["budgeted chain readers"]
-  N2["SQLite cache/checkpoints"]
-  N3["verification and ranked reports"]
-N0 --> N1 --> N2 --> N3
-```
-
-## Quickstart
+## Local setup
 
 ```console
-python -m venv .venv
-# Activate .venv, then:
 python -m pip install -e .
+python -m wallet_forensics --help
 python -m unittest discover -s tests -p test_forensics.py -v
 ```
 
-The commands above install prerequisites or run the specified offline checks. Live collection, cloud operations, messaging and trading are separate operational steps when present.
+Use Python 3.11+ in an activated virtual environment. The focused tests use offline inputs; provider credentials and original research outputs are not bundled.
 
-## Example
+## Resumable evidence path
 
-**Inspect the workflow**
+```mermaid
+flowchart LR
+  Seeds[Input audit and selected calls] --> Readers[EVM and Solana readers]
+  Readers --> Budget{Budget or stop reached?}
+  Budget -->|yes| Checkpoint[(Retained SQLite checkpoint)]
+  Budget -->|no| Coverage[Transaction and coverage updates]
+  Coverage --> Checkpoint
+  Checkpoint --> Rank[Rank and export]
+  Checkpoint --> Readers
+```
 
-Begin with configured research seeds, inspect a bounded reader run and retain its SQLite checkpoint. Resume from stored state rather than interpreting a partial run as complete. Report evidence and unresolved cases alongside rankings; a transaction correlation is not a claim about a person.
+[evm.py](wallet_forensics/evm.py) and [solana.py](wallet_forensics/solana.py) implement chain-specific reads; [ranking.py](wallet_forensics/ranking.py) and [report.py](wallet_forensics/report.py) derive views from retained evidence. Public transaction correlation does not prove personal identity, wallet ownership or complete provider coverage.
 
-## Configuration and storage
+**Technology:** Python · SQLite · HTTP/RPC readers · JSON/CSV · pycryptodome
 
-Python 3.11+, SQLite and HTTP/RPC readers. Provider configuration and request budgets are required for live collection. Prior research outputs are not bundled.
-
-## Repository guide
-
-| Location | Responsibility |
-| --- | --- |
-| [wallet_forensics/evm.py](wallet_forensics/evm.py) | EVM reader |
-| [wallet_forensics/solana.py](wallet_forensics/solana.py) | Solana reader |
-| [wallet_forensics/pipeline.py](wallet_forensics/pipeline.py) | Research pipeline |
-| [wallet_forensics/ranking.py](wallet_forensics/ranking.py) | Ranked views |
-
-## Validation
-
-These checks use offline fixtures or controlled backends.
-
-## Scope and operational boundaries
-
-Public-chain evidence does not establish wallet ownership or identity. Provider calls consume quotas; offline tests do not establish present RPC coverage or completeness.
-
-## Documentation
-
-- The repository guide above links directly to the implementation and configuration files.
-
-## License and attribution
-
-Project-authored source code is licensed under the [MIT License](LICENSE). Third-party components and datasets retain their respective rights and licenses.
+Project-authored source: [MIT](LICENSE). Third-party components retain their own notices and terms.
